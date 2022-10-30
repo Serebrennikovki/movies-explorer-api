@@ -1,5 +1,5 @@
 const Movie = require('../models/movie');
-// const NoRightsError = require('../errors/noRightsError');
+const NoRightsError = require('../errors/noRightsError');
 const ValidationError = require('../errors/validationError');
 const NotFoundError = require('../errors/notFoundError');
 
@@ -12,7 +12,7 @@ module.exports.getMovies = (req, res, next) => {
 module.exports.createMovie = (req, res, next) => {
   const {
     country, director, duration, year, description, image,
-    trailerLink, thumbnail, movieId, nameRU, nameEN, owner,
+    trailerLink, thumbnail, movieId, nameRU, nameEN,
   } = req.body;
   Movie.create({
     country,
@@ -26,7 +26,7 @@ module.exports.createMovie = (req, res, next) => {
     movieId,
     nameRU,
     nameEN,
-    owner,
+    owner: req.user._id,
   })
     .then((movie) => res.send(movie))
     .catch((error) => {
@@ -43,6 +43,9 @@ module.exports.deleteMovie = (req, res, next) => {
     .then((movie) => {
       if (!movie) {
         throw new NotFoundError(`Карточка с указанным ${req.params.idMovie} не найдена.`);
+      }
+      if (req.user._id !== movie.owner.toString()) {
+        throw new NoRightsError(`Карточка с указанным ${req.params.cardId} не может быть удалена. Нет прав.`);
       }
       return Movie.findByIdAndRemove(req.params.idMovie)
         .then((movieDeleted) => res.send(movieDeleted));

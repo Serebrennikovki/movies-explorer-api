@@ -42,6 +42,5 @@ module.exports.validateRequestCreateMovie = celebrate({
     movieId: Joi.string().required(),
     nameRU: Joi.string().required(),
     nameEN: Joi.string().required(),
-    owner: Joi.string().required(),
   }),
 });
