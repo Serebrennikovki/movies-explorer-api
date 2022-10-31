@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-//  const validator = require('validator');
-const { linkRegExp } = require('../utils/linkRegEx');
+const validator = require('validator');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -27,7 +26,9 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => linkRegExp.test(v),
+      validator: (v) => {
+        return validator.isURL(v);
+      },
       message: 'это не ссылка',
     },
   },
@@ -35,20 +36,28 @@ const movieSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (v) => linkRegExp.test(v),
+      validator: (v) => {
+        return validator.isURL(v);
+      },
       message: 'это не ссылка',
     },
   },
   thumbnail: {
     type: String,
     required: true,
+    validate: {
+      validator: (v) => {
+        return validator.isURL(v);
+      },
+      message: 'это не ссылка',
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
   movieId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     required: true,
   },
   nameRU: {

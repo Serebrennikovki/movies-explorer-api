@@ -37,12 +37,15 @@ module.exports.createUser = (req, res, next) => {
 };
 
 module.exports.getInfoUser = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((userInfo) => {
       if (!userInfo) {
-        throw new NotFoundError(`Пользователь по указанному ${req.params.userId} не найден`);
+        throw new NotFoundError(`Пользователь по указанному ${req.user._id} не найден`);
       }
-      return res.send(userInfo);
+      return res.send({
+        name: userInfo.name,
+        email: userInfo.email,
+      });
     })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -54,7 +57,10 @@ module.exports.getInfoUser = (req, res, next) => {
 module.exports.updateInfoUser = (req, res, next) => {
   const { name, email } = req.body;
   User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
-    .then((newUserInfo) => { res.send(newUserInfo); })
+    .then((newUserInfo) => res.send({
+      name: newUserInfo.name,
+      email: newUserInfo.email,
+    }))
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new ValidationError('Переданы некорректные данные при обновлении профиля'));
