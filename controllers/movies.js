@@ -4,7 +4,7 @@ const ValidationError = require('../errors/validationError');
 const NotFoundError = require('../errors/notFoundError');
 
 module.exports.getMovies = (req, res, next) => {
-  Movie.find({})
+  Movie.find({ owner: req.user._id })
     .then((cards) => res.send(cards))
     .catch(next);
 };
